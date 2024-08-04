@@ -9,7 +9,14 @@ import {
   getAuth,
   User,
 } from '@angular/fire/auth';
-import { map, switchMap, firstValueFrom, filter, Observable, Subscription } from 'rxjs';
+import {
+  map,
+  switchMap,
+  firstValueFrom,
+  filter,
+  Observable,
+  Subscription,
+} from 'rxjs';
 import {
   doc,
   docData,
@@ -41,14 +48,13 @@ import { getToken, Messaging, onMessage } from '@angular/fire/messaging';
 import { Router } from '@angular/router';
 
 type ChatMessage = {
-  name: string | null,
-  profilePicUrl: string | null,
-  timestamp: FieldValue,
-  uid: string | null,
-  text?: string,
-  imageUrl?: string
+  name: string | null;
+  profilePicUrl: string | null;
+  timestamp: FieldValue;
+  uid: string | null;
+  text?: string;
+  imageUrl?: string;
 };
-
 
 @Injectable({
   providedIn: 'root',
@@ -141,9 +147,16 @@ export class ChatService {
     return this.addMessage(messageText, null);
   };
 
-  // Loads chat messages history and listens for upcoming ones.
+  // Loads chat message history and listens for upcoming ones.
   loadMessages = () => {
-    return null as unknown;
+    // Create the query to load the last 12 messages and listen for new ones.
+    const recentMessagesQuery = query(
+      collection(this.firestore, 'messages'),
+      orderBy('timestamp', 'desc'),
+      limit(12)
+    );
+    // Start listening to the query.
+    return collectionData(recentMessagesQuery);
   };
 
   // Saves a new message containing an image in Firebase.
